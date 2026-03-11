@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Readiness Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .section-header {
+            color: #667eea;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .question-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+        .option label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-size: 0.95em;
+        }
+        .text-input-group {
+            margin-bottom: 20px;
+        }
+        .text-input-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .text-input-group input,
+        .text-input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        .text-input-group input:focus,
+        .text-input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .text-input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        .score-display {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .score-number {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .score-label {
+            font-size: 1.5em;
+            opacity: 0.9;
+        }
+        .comparison-section {
+            text-align: center;
+            padding: 25px;
+            background: #f0f4ff;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        .comparison-section .percentile {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .comparison-section .percentile-label {
+            font-size: 1em;
+            color: #555;
+            margin-top: 5px;
+        }
+        .comparison-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            min-width: 120px;
+            flex: 1;
+        }
+        .stat-box .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        .stat-box .stat-label {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 4px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .weakness-item, .resource-item {
+            padding: 15px;
+            background: white;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #764ba2;
+        }
+        .resource-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .resource-item a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .resource-item a:hover {
+            text-decoration: underline;
+        }
+        .resource-item p {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+        .restart-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        .restart-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .distribution-chart {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+        .distribution-bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .distribution-bar-label {
+            width: 110px;
+            font-weight: 600;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .distribution-bar-track {
+            flex: 1;
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        .distribution-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .distribution-bar-count {
+            width: 50px;
+            text-align: right;
+            color: #888;
+            font-size: 0.85em;
+        }
+        .your-score-marker {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Readiness Assessment</h1>
+        <p class="subtitle">Discover your AI proficiency level and get personalized recommendations</p>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <form id="assessmentForm">
+            <!-- Qualifying Questions Section -->
+            <div class="section-header">About You</div>
+
+            <div class="question-block">
+                <div class="text-input-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g. Marketing Manager, Software Engineer, CEO" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="company">Company *</label>
+                    <input type="text" id="company" name="company" placeholder="e.g. Acme Corp" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" name="location" placeholder="e.g. New York, NY" required>
+                </div>
+            </div>
+
+            <!-- AI Assessment Questions -->
+            <div class="section-header">AI Readiness Questions</div>
+
+            <!-- Question 1 -->
+            <div class="question-block">
+                <div class="question-text">1. How often do you currently use AI tools in your professional work?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q1a" name="q1" value="10" required>
+                        <label for="q1a">Daily - AI tools are integrated into my workflow</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q1b" name="q1" value="7">
+                        <label for="q1b">Weekly - I use AI tools for specific tasks regularly</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q1c" name="q1" value="4">
+                        <label for="q1c">Monthly - I occasionally experiment with AI tools</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q1d" name="q1" value="1">
+                        <label for="q1d">Rarely/Never - I haven't meaningfully used AI tools</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-block">
+                <div class="question-text">2. How comfortable are you with identifying specific use cases where AI could improve your workflow?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q2a" name="q2" value="10" required>
+                        <label for="q2a">Very comfortable - I can easily identify 5+ specific use cases</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q2b" name="q2" value="7">
+                        <label for="q2b">Comfortable - I can identify 2-3 use cases with some thought</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q2c" name="q2" value="4">
+                        <label for="q2c">Somewhat comfortable - I have vague ideas but struggle to be specific</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q2d" name="q2" value="1">
+                        <label for="q2d">Not comfortable - I don't know where to start</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-block">
+                <div class="question-text">3. How do you typically evaluate new AI tools before using them?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q3a" name="q3" value="10" required>
+                        <label for="q3a">Systematic approach - I research, watch demos, test trials, and assess ROI</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q3b" name="q3" value="7">
+                        <label for="q3b">Moderate research - I read reviews and try free versions</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q3c" name="q3" value="4">
+                        <label for="q3c">Minimal research - I jump in based on recommendations</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q3d" name="q3" value="1">
+                        <label for="q3d">No process - I don't know how to evaluate AI tools</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-block">
+                <div class="question-text">4. How many AI tools can you name and describe their primary use cases?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q4a" name="q4" value="10" required>
+                        <label for="q4a">10+ tools - I can describe various AI tools across different categories</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q4b" name="q4" value="7">
+                        <label for="q4b">5-9 tools - I know several tools and their purposes</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q4c" name="q4" value="4">
+                        <label for="q4c">2-4 tools - I'm familiar with a few popular options</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q4d" name="q4" value="1">
+                        <label for="q4d">0-1 tools - I only know ChatGPT or similar</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-block">
+                <div class="question-text">5. Have you completed a real project using AI tools from start to finish?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q5a" name="q5" value="10" required>
+                        <label for="q5a">Multiple projects - I regularly complete projects using AI</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q5b" name="q5" value="7">
+                        <label for="q5b">1-2 projects - I've completed at least one meaningful project</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q5c" name="q5" value="4">
+                        <label for="q5c">Started but not finished - I've experimented but not completed projects</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q5d" name="q5" value="1">
+                        <label for="q5d">No projects - I haven't attempted any complete projects</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-block">
+                <div class="question-text">6. How well do you understand AI prompting techniques and best practices?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q6a" name="q6" value="10" required>
+                        <label for="q6a">Expert level - I use advanced techniques like chain-of-thought, few-shot learning</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q6b" name="q6" value="7">
+                        <label for="q6b">Intermediate - I understand context, specificity, and iterative refinement</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q6c" name="q6" value="4">
+                        <label for="q6c">Basic - I write simple prompts but don't know optimization techniques</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q6d" name="q6" value="1">
+                        <label for="q6d">Beginner - I don't know how to write effective prompts</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-block">
+                <div class="question-text">7. Do you stay updated on new AI tools and developments?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q7a" name="q7" value="10" required>
+                        <label for="q7a">Actively engaged - I follow newsletters, communities, and test new tools regularly</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q7b" name="q7" value="7">
+                        <label for="q7b">Moderately engaged - I occasionally check AI news and updates</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q7c" name="q7" value="4">
+                        <label for="q7c">Passively aware - I hear about AI through general news</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q7d" name="q7" value="1">
+                        <label for="q7d">Not engaged - I don't follow AI developments</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-block">
+                <div class="question-text">8. How effectively can you troubleshoot when an AI tool doesn't work as expected?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q8a" name="q8" value="10" required>
+                        <label for="q8a">Very effective - I systematically adjust prompts, settings, and approaches</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q8b" name="q8" value="7">
+                        <label for="q8b">Moderately effective - I try different approaches with some success</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q8c" name="q8" value="4">
+                        <label for="q8c">Somewhat effective - I make basic attempts but often get stuck</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q8d" name="q8" value="1">
+                        <label for="q8d">Not effective - I give up when tools don't work immediately</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-block">
+                <div class="question-text">9. Can you assess the quality and reliability of AI-generated outputs?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q9a" name="q9" value="10" required>
+                        <label for="q9a">Highly skilled - I critically evaluate outputs and know when to trust/verify</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q9b" name="q9" value="7">
+                        <label for="q9b">Moderately skilled - I review outputs and catch obvious errors</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q9c" name="q9" value="4">
+                        <label for="q9c">Somewhat skilled - I sometimes catch errors but miss subtle issues</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q9d" name="q9" value="1">
+                        <label for="q9d">Unskilled - I tend to accept AI outputs without verification</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question-block">
+                <div class="question-text">10. How confident are you in your ability to integrate AI tools into your existing workflows?</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="q10a" name="q10" value="10" required>
+                        <label for="q10a">Very confident - I seamlessly incorporate AI into my daily processes</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q10b" name="q10" value="7">
+                        <label for="q10b">Moderately confident - I can integrate AI with some planning</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q10c" name="q10" value="4">
+                        <label for="q10c">Somewhat confident - I struggle to make AI fit my workflow</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="q10d" name="q10" value="1">
+                        <label for="q10d">Not confident - I don't know how to integrate AI into my work</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open-Ended Questions -->
+            <div class="section-header">Tell Us More</div>
+
+            <div class="question-block">
+                <div class="text-input-group">
+                    <label for="aiToolsInterest">What AI tools and skills do you want to learn more about?</label>
+                    <textarea id="aiToolsInterest" name="aiToolsInterest" placeholder="e.g. ChatGPT prompting, image generation with Midjourney, automating workflows with Zapier AI..."></textarea>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <div class="text-input-group">
+                    <label for="aiWorkGoals">What kind of work do you want AI to do for you?</label>
+                    <textarea id="aiWorkGoals" name="aiWorkGoals" placeholder="e.g. email marketing, lead generation, organizing my inbox, writing proposals, data analysis..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Calculate My AI Readiness Score</button>
+        </form>
+
+        <div id="results" class="results">
+            <div class="score-display">
+                <div class="score-label">Your AI Readiness Score</div>
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-label" id="scoreCategory"></div>
+
+                <div class="comparison-section">
+                    <div class="percentile" id="percentileValue">--</div>
+                    <div class="percentile-label" id="percentileLabel">Loading comparison data...</div>
+                    <div class="comparison-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="totalResponses">--</div>
+                            <div class="stat-label">Total Responses</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="averageScore">--</div>
+                            <div class="stat-label">Average Score</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="highestScore">--</div>
+                            <div class="stat-label">Highest Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Score Distribution</h3>
+                <div class="distribution-chart" id="distributionChart">
+                    <p style="color:#888; text-align:center;">Loading distribution data...</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Score Breakdown</h3>
+                <div id="breakdown"></div>
+            </div>
+
+            <div class="section">
+                <h3>Areas for Improvement</h3>
+                <div id="weaknesses"></div>
+            </div>
+
+            <div class="section">
+                <h3>Recommended Resources & Tools</h3>
+                <div id="resources"></div>
+            </div>
+
+            <button class="restart-btn" onclick="restartAssessment()">Take Assessment Again</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Update progress bar
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', updateProgress);
+        });
+
+        function updateProgress() {
+            const totalQuestions = 10;
+            const answeredQuestions = new Set();
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) {
+                    answeredQuestions.add(i);
+                }
+            }
+            const progress = (answeredQuestions.size / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateScore();
+        });
+
+        function calculateScore() {
+            let totalScore = 0;
+            const scores = {};
+
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    const score = parseInt(selected.value);
+                    scores[`q${i}`] = score;
+                    totalScore += score;
+                }
+            }
+
+            const averageScore = (totalScore / 10).toFixed(1);
+
+            // Collect qualifying info and open-ended responses
+            const submission = {
+                jobTitle: document.getElementById('jobTitle').value.trim(),
+                company: document.getElementById('company').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                scores: scores,
+                averageScore: parseFloat(averageScore),
+                aiToolsInterest: document.getElementById('aiToolsInterest').value.trim(),
+                aiWorkGoals: document.getElementById('aiWorkGoals').value.trim(),
+                submittedAt: new Date().toISOString()
+            };
+
+            // Submit to backend and display results
+            submitAndDisplay(submission, averageScore, scores);
+        }
+
+        async function submitAndDisplay(submission, score, scores) {
+            displayResults(score, scores);
+
+            try {
+                const response = await fetch(`${API_BASE}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                });
+
+                if (response.ok) {
+                    const comparison = await response.json();
+                    displayComparison(comparison, parseFloat(score));
+                } else {
+                    displayComparisonFallback(parseFloat(score));
+                }
+            } catch (err) {
+                console.error('Backend unavailable:', err);
+                displayComparisonFallback(parseFloat(score));
+            }
+        }
+
+        function displayComparison(data, userScore) {
+            document.getElementById('totalResponses').textContent = data.totalResponses;
+            document.getElementById('averageScore').textContent = data.averageScore.toFixed(1);
+            document.getElementById('highestScore').textContent = data.highestScore.toFixed(1);
+
+            const percentile = data.percentile;
+            document.getElementById('percentileValue').textContent = `Top ${percentile}%`;
+
+            if (percentile <= 10) {
+                document.getElementById('percentileLabel').textContent = "You're among the highest scorers!";
+            } else if (percentile <= 25) {
+                document.getElementById('percentileLabel').textContent = "You're well above average!";
+            } else if (percentile <= 50) {
+                document.getElementById('percentileLabel').textContent = "You're above the median score.";
+            } else {
+                document.getElementById('percentileLabel').textContent = "Room to grow — keep learning!";
+            }
+
+            // Render distribution chart
+            renderDistribution(data.distribution, userScore);
+        }
+
+        function displayComparisonFallback(userScore) {
+            document.getElementById('percentileValue').textContent = '--';
+            document.getElementById('percentileLabel').textContent = 'Comparison data unavailable (backend offline)';
+            document.getElementById('totalResponses').textContent = '--';
+            document.getElementById('averageScore').textContent = '--';
+            document.getElementById('highestScore').textContent = '--';
+            document.getElementById('distributionChart').innerHTML = '<p style="color:#888; text-align:center;">Distribution data unavailable.</p>';
+        }
+
+        function renderDistribution(distribution, userScore) {
+            const buckets = [
+                { label: 'Novice (0-3)', key: 'novice', color: '#F44336' },
+                { label: 'Beginner (3-5)', key: 'beginner', color: '#FF9800' },
+                { label: 'Intermediate (5-7)', key: 'intermediate', color: '#FFC107' },
+                { label: 'Proficient (7-9)', key: 'proficient', color: '#4CAF50' },
+                { label: 'Expert (9-10)', key: 'expert', color: '#667eea' }
+            ];
+
+            const maxCount = Math.max(...buckets.map(b => distribution[b.key] || 0), 1);
+
+            // Determine which bucket the user falls in
+            let userBucket;
+            if (userScore < 3) userBucket = 'novice';
+            else if (userScore < 5) userBucket = 'beginner';
+            else if (userScore < 7) userBucket = 'intermediate';
+            else if (userScore < 9) userBucket = 'proficient';
+            else userBucket = 'expert';
+
+            let html = '';
+            buckets.forEach(bucket => {
+                const count = distribution[bucket.key] || 0;
+                const width = (count / maxCount) * 100;
+                const isUser = bucket.key === userBucket;
+                html += `
+                    <div class="distribution-bar-row">
+                        <div class="distribution-bar-label">
+                            ${bucket.label}${isUser ? '<span class="your-score-marker">You</span>' : ''}
+                        </div>
+                        <div class="distribution-bar-track">
+                            <div class="distribution-bar-fill" style="width:${width}%; background:${bucket.color};"></div>
+                        </div>
+                        <div class="distribution-bar-count">${count}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('distributionChart').innerHTML = html;
+        }
+
+        function displayResults(score, scores) {
+            document.getElementById('assessmentForm').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('scoreNumber').textContent = score;
+
+            let category, description;
+            if (score >= 9) {
+                category = "AI Expert";
+                description = "You're at the forefront of AI adoption!";
+            } else if (score >= 7) {
+                category = "AI Proficient";
+                description = "You have strong AI skills with room to grow";
+            } else if (score >= 5) {
+                category = "AI Intermediate";
+                description = "You're making progress but need more practice";
+            } else if (score >= 3) {
+                category = "AI Beginner";
+                description = "You're just starting your AI journey";
+            } else {
+                category = "AI Novice";
+                description = "Great opportunity to explore AI tools!";
+            }
+
+            document.getElementById('scoreCategory').innerHTML = `${category}<br><small style="font-size:0.5em">${description}</small>`;
+
+            displayBreakdown(scores);
+            identifyWeaknesses(scores);
+            provideResources(score, scores);
+        }
+
+        function displayBreakdown(scores) {
+            const areas = {
+                q1: "Current Usage Frequency",
+                q2: "Use Case Identification",
+                q3: "Tool Evaluation Process",
+                q4: "AI Tool Knowledge",
+                q5: "Project Completion",
+                q6: "Prompting Expertise",
+                q7: "Staying Updated",
+                q8: "Troubleshooting Ability",
+                q9: "Output Quality Assessment",
+                q10: "Workflow Integration"
+            };
+
+            let html = '';
+            for (const [key, value] of Object.entries(scores)) {
+                const percentage = value * 10;
+                const color = value >= 7 ? '#4CAF50' : value >= 4 ? '#FFC107' : '#F44336';
+                html += `
+                    <div style="margin-bottom:15px">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px">
+                            <span style="font-weight:600">${areas[key]}</span>
+                            <span style="font-weight:600">${value}/10</span>
+                        </div>
+                        <div style="background:#e0e0e0; height:8px; border-radius:4px; overflow:hidden">
+                            <div style="background:${color}; width:${percentage}%; height:100%; transition:width 0.5s ease"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('breakdown').innerHTML = html;
+        }
+
+        function identifyWeaknesses(scores) {
+            const weaknessMap = {
+                q1: {
+                    title: "Infrequent AI Tool Usage",
+                    advice: "Start small by identifying one daily task where AI could help. Commit to using an AI tool for that specific task every day for two weeks to build a habit."
+                },
+                q2: {
+                    title: "Difficulty Identifying Use Cases",
+                    advice: "Use the '5 Steps for Dating AI Tools' framework. Begin by brainstorming three specific pain points in your workflow, then research AI tools designed to address those challenges."
+                },
+                q3: {
+                    title: "Weak Tool Evaluation Skills",
+                    advice: "Develop a systematic evaluation process: (1) Watch demo videos, (2) Test free trials, (3) Complete one small project, (4) Assess time saved vs. learning investment."
+                },
+                q4: {
+                    title: "Limited AI Tool Knowledge",
+                    advice: "Subscribe to AI newsletters like Ben's Bites, Lenny's Newsletter, or The Sequence. Spend 15 minutes weekly exploring new tools on TheresAnAIForThat.com."
+                },
+                q5: {
+                    title: "No Completed AI Projects",
+                    advice: "Learning by doing is crucial. Choose a simple, deadline-driven project that matters to you. Complete it from start to finish using AI tools to solidify your understanding."
+                },
+                q6: {
+                    title: "Basic Prompting Skills",
+                    advice: "Study prompt engineering fundamentals: be specific, provide context, use examples, iterate on results. Practice with diverse prompting techniques for different outcomes."
+                },
+                q7: {
+                    title: "Not Staying Updated",
+                    advice: "The AI landscape changes rapidly. Set a weekly reminder to check AI news sources, join AI communities on LinkedIn or Reddit, and experiment with new tools quarterly."
+                },
+                q8: {
+                    title: "Poor Troubleshooting Abilities",
+                    advice: "When tools don't work, systematically test variables: adjust prompts, try different phrasings, check settings, research common issues. Document what works for future reference."
+                },
+                q9: {
+                    title: "Insufficient Output Verification",
+                    advice: "Always verify AI outputs, especially for important work. Cross-check facts, review for bias, ensure accuracy. Treat AI as a collaborative assistant, not an infallible expert."
+                },
+                q10: {
+                    title: "Struggle with Workflow Integration",
+                    advice: "Map your existing workflow step-by-step. Identify bottlenecks or repetitive tasks. Test AI tools at specific integration points rather than trying to overhaul everything at once."
+                }
+            };
+
+            const weaknesses = [];
+            for (const [key, score] of Object.entries(scores)) {
+                if (score < 7) {
+                    weaknesses.push(weaknessMap[key]);
+                }
+            }
+
+            let html = '';
+            if (weaknesses.length === 0) {
+                html = '<div class="weakness-item">Great job! You\'re performing well across all areas. Focus on maintaining your skills and exploring advanced AI techniques.</div>';
+            } else {
+                weaknesses.forEach(weakness => {
+                    html += `
+                        <div class="weakness-item">
+                            <strong style="color:#764ba2; font-size:1.1em">${weakness.title}</strong>
+                            <p style="margin-top:8px; color:#555">${weakness.advice}</p>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('weaknesses').innerHTML = html;
+        }
+
+        function provideResources(score, scores) {
+            const resourcesByLevel = {
+                novice: [
+                    {
+                        title: "Start Here: ChatGPT Free",
+                        url: "https://chat.openai.com/",
+                        description: "Begin with the most accessible AI tool. Use the free tier to practice basic prompts for writing, brainstorming, and research.",
+                        level: "Foundation"
+                    },
+                    {
+                        title: "5 Steps for Dating AI Tools Effectively",
+                        url: "#",
+                        description: "Your framework for systematically discovering and evaluating AI tools. Essential reading before exploring new tools.",
+                        level: "Foundation"
+                    },
+                    {
+                        title: "There's An AI For That",
+                        url: "https://theresanaiforthat.com/",
+                        description: "Browse thousands of AI tools by category. Start exploring what's possible and identify tools for your specific needs.",
+                        level: "Discovery"
+                    },
+                    {
+                        title: "Basic Prompt Engineering Tutorial",
+                        url: "https://www.promptingguide.ai/introduction/basics",
+                        description: "Learn the fundamentals: how to write clear prompts, provide context, and get better results from AI tools.",
+                        level: "Foundation"
+                    },
+                    {
+                        title: "Ben's Bites Newsletter",
+                        url: "https://www.bensbites.co/",
+                        description: "Daily digest of AI news and tools in plain English. Start building awareness of the AI landscape.",
+                        level: "Discovery"
+                    },
+                    {
+                        title: "Action Step: Complete Your First AI Project",
+                        url: "#",
+                        description: "Choose one simple task (draft an email, create an outline, summarize an article) and complete it start-to-finish using AI. Learning by doing is essential.",
+                        level: "Practice"
+                    }
+                ],
+                beginner: [
+                    {
+                        title: "ChatGPT Plus or Claude Pro",
+                        url: "https://openai.com/chatgpt/pricing/",
+                        description: "Upgrade to paid tiers for faster responses, advanced models, and priority access. Essential for serious daily use.",
+                        level: "Core Tools"
+                    },
+                    {
+                        title: "Notion AI for Workflow Integration",
+                        url: "https://www.notion.so/product/ai",
+                        description: "Integrate AI directly into your note-taking and project management. Perfect for learning workflow integration.",
+                        level: "Core Tools"
+                    },
+                    {
+                        title: "Prompt Engineering Guide (Intermediate)",
+                        url: "https://www.promptingguide.ai/",
+                        description: "Learn techniques like few-shot learning, chain-of-thought prompting, and iterative refinement to get better results.",
+                        level: "Skill Building"
+                    },
+                    {
+                        title: "Ben's Bites & Lenny's Newsletter",
+                        url: "https://www.bensbites.co/",
+                        description: "Subscribe to both for weekly updates on AI tools and practical business applications. Build your discovery habit.",
+                        level: "Staying Current"
+                    },
+                    {
+                        title: "Anthropic Prompt Library",
+                        url: "https://docs.anthropic.com/claude/prompt-library",
+                        description: "Study proven prompt templates for different tasks. Learn patterns you can adapt to your own work.",
+                        level: "Skill Building"
+                    },
+                    {
+                        title: "Action Step: Build 3 AI Workflows",
+                        url: "#",
+                        description: "Identify 3 repetitive tasks in your work and create AI-assisted workflows for each. Document what works and iterate.",
+                        level: "Practice"
+                    },
+                    {
+                        title: "Perplexity AI for Research",
+                        url: "https://www.perplexity.ai/",
+                        description: "Learn to use AI-powered search for research with cited sources. Essential skill for verifying AI outputs.",
+                        level: "Core Tools"
+                    }
+                ],
+                intermediate: [
+                    {
+                        title: "Claude (Anthropic) for Complex Tasks",
+                        url: "https://claude.ai/",
+                        description: "Master longer conversations and complex reasoning tasks. Excellent for detailed analysis and following intricate instructions.",
+                        level: "Advanced Tools"
+                    },
+                    {
+                        title: "Midjourney or DALL-E for Visual AI",
+                        url: "https://www.midjourney.com/",
+                        description: "Expand beyond text AI into image generation. Essential for modern content creation and design workflows.",
+                        level: "Advanced Tools"
+                    },
+                    {
+                        title: "Zapier AI for Automation",
+                        url: "https://zapier.com/ai",
+                        description: "Automate workflows between apps using AI. Connect your tools and eliminate repetitive manual tasks.",
+                        level: "Advanced Tools"
+                    },
+                    {
+                        title: "The Sequence Newsletter",
+                        url: "https://thesequence.substack.com/",
+                        description: "Deep technical insights on AI developments. Understand the technology behind the tools you're using.",
+                        level: "Deep Learning"
+                    },
+                    {
+                        title: "Advanced Prompt Engineering",
+                        url: "https://www.promptingguide.ai/techniques",
+                        description: "Master advanced techniques: role prompting, system messages, output formatting, multi-step reasoning chains.",
+                        level: "Skill Mastery"
+                    },
+                    {
+                        title: "Action Step: Optimize 5 Existing Workflows",
+                        url: "#",
+                        description: "Review your current AI usage. Identify inefficiencies, test new tools, measure time savings. Move from adoption to optimization.",
+                        level: "Practice"
+                    },
+                    {
+                        title: "GitHub Copilot (for technical users)",
+                        url: "https://github.com/features/copilot",
+                        description: "If you work with code or technical documentation, add AI-assisted coding to your toolkit.",
+                        level: "Specialized Tools"
+                    },
+                    {
+                        title: "Build Your AI Evaluation Framework",
+                        url: "#",
+                        description: "Create systematic criteria for testing new tools: success metrics, trial periods, cost-benefit analysis, integration complexity.",
+                        level: "Skill Mastery"
+                    }
+                ],
+                proficient: [
+                    {
+                        title: "Custom GPTs and Claude Projects",
+                        url: "https://openai.com/blog/introducing-gpts",
+                        description: "Create specialized AI assistants for recurring tasks. Build custom tools tailored to your exact workflow needs.",
+                        level: "Power User"
+                    },
+                    {
+                        title: "API Access for Custom Integration",
+                        url: "https://platform.openai.com/docs/api-reference",
+                        description: "Integrate AI directly into your applications and workflows via APIs. Build custom solutions beyond pre-built interfaces.",
+                        level: "Advanced Integration"
+                    },
+                    {
+                        title: "LangChain for AI Application Development",
+                        url: "https://www.langchain.com/",
+                        description: "Framework for building sophisticated AI applications with memory, tools, and multi-step reasoning.",
+                        level: "Advanced Integration"
+                    },
+                    {
+                        title: "Contribute to AI Communities",
+                        url: "https://www.reddit.com/r/LocalLLaMA/",
+                        description: "Share your knowledge and learn from cutting-edge practitioners in AI communities and forums.",
+                        level: "Thought Leadership"
+                    },
+                    {
+                        title: "Artificially Intelligent Newsletter",
+                        url: "https://jack-clark.net/",
+                        description: "Deep analysis of AI research, policy, and strategic implications. Understand the future direction of AI.",
+                        level: "Strategic Thinking"
+                    },
+                    {
+                        title: "Action Step: Teach Others Your AI System",
+                        url: "#",
+                        description: "Document and teach your AI workflows to colleagues. Teaching solidifies expertise and identifies optimization opportunities.",
+                        level: "Mastery"
+                    },
+                    {
+                        title: "Experiment with Open Source Models",
+                        url: "https://huggingface.co/",
+                        description: "Explore open-source alternatives, fine-tuning, and local deployment options for specialized use cases.",
+                        level: "Advanced Tools"
+                    },
+                    {
+                        title: "Monitor Emerging AI Research",
+                        url: "https://arxiv.org/list/cs.AI/recent",
+                        description: "Stay ahead by following cutting-edge research. Understand what's coming before it reaches mainstream tools.",
+                        level: "Strategic Thinking"
+                    }
+                ],
+                expert: [
+                    {
+                        title: "Fine-tuning Custom Models",
+                        url: "https://platform.openai.com/docs/guides/fine-tuning",
+                        description: "Train specialized models on your data for domain-specific performance improvements.",
+                        level: "Expert"
+                    },
+                    {
+                        title: "Multi-Agent AI Systems",
+                        url: "https://www.microsoft.com/en-us/research/project/autogen/",
+                        description: "Build systems where multiple AI agents collaborate on complex tasks with specialized roles.",
+                        level: "Expert"
+                    },
+                    {
+                        title: "AI Safety and Ethics Leadership",
+                        url: "https://www.anthropic.com/research",
+                        description: "Lead discussions on responsible AI deployment in your organization. Shape AI policy and best practices.",
+                        level: "Thought Leadership"
+                    },
+                    {
+                        title: "Action Step: Publish Your AI Methodologies",
+                        url: "#",
+                        description: "Write articles, create courses, or speak at conferences about your AI systems and learnings. Establish yourself as an AI thought leader.",
+                        level: "Mastery"
+                    },
+                    {
+                        title: "Mentor the Next Generation",
+                        url: "#",
+                        description: "Your expertise is valuable. Mentor professionals and teams on effective AI adoption. Share your evaluation frameworks and workflow designs.",
+                        level: "Thought Leadership"
+                    },
+                    {
+                        title: "Explore Frontier Models",
+                        url: "https://www.anthropic.com/api",
+                        description: "Get early access to frontier models like Claude Opus, GPT-4 Turbo. Test capabilities before they reach mainstream adoption.",
+                        level: "Cutting Edge"
+                    },
+                    {
+                        title: "Build AI-First Products",
+                        url: "#",
+                        description: "Design products and services with AI as a core capability, not an add-on. Shape the next generation of AI applications.",
+                        level: "Innovation"
+                    }
+                ]
+            };
+
+            let levelResources, levelName, levelAdvice;
+
+            if (score < 3) {
+                levelResources = resourcesByLevel.novice;
+                levelName = "Novice Level (Getting Started)";
+                levelAdvice = "Focus on fundamentals first. Master one core tool (ChatGPT) before expanding. Complete small projects to build confidence and practical skills.";
+            } else if (score < 5) {
+                levelResources = resourcesByLevel.beginner;
+                levelName = "Beginner Level (Building Foundation)";
+                levelAdvice = "You're making progress! Now focus on workflow integration and developing consistent AI habits. Aim to use AI tools daily in your actual work.";
+            } else if (score < 7) {
+                levelResources = resourcesByLevel.intermediate;
+                levelName = "Intermediate Level (Expanding Capabilities)";
+                levelAdvice = "You have solid foundations. Now optimize your existing workflows and explore specialized tools. Focus on measuring ROI and efficiency gains.";
+            } else if (score < 9) {
+                levelResources = resourcesByLevel.proficient;
+                levelName = "Proficient Level (Power User)";
+                levelAdvice = "You're a power user! Consider custom integrations, API access, and building specialized AI solutions. Start sharing your expertise with others.";
+            } else {
+                levelResources = resourcesByLevel.expert;
+                levelName = "Expert Level (AI Leader)";
+                levelAdvice = "You're at the frontier! Focus on thought leadership, mentoring others, and shaping AI best practices. Consider contributing to the broader AI community.";
+            }
+
+            const weakAreas = Object.entries(scores)
+                .filter(([key, score]) => score < 5)
+                .map(([key]) => key);
+            const targetedResources = [];
+
+            if (weakAreas.includes('q6') || weakAreas.includes('q8')) {
+                targetedResources.push({
+                    title: "Priority: Improve Your Prompting Skills",
+                    url: "https://www.promptingguide.ai/",
+                    description: "Your prompting skills need attention. Start with the basics guide, practice daily, and study example prompts.",
+                    level: "Your Priority"
+                });
+            }
+
+            if (weakAreas.includes('q5')) {
+                targetedResources.push({
+                    title: "Priority: Complete a Real Project",
+                    url: "#",
+                    description: "You need hands-on experience. Choose a simple project with a deadline and complete it using AI from start to finish.",
+                    level: "Your Priority"
+                });
+            }
+
+            if (weakAreas.includes('q7')) {
+                targetedResources.push({
+                    title: "Priority: Stay Current with AI Developments",
+                    url: "https://www.bensbites.co/",
+                    description: "Subscribe to Ben's Bites and set a weekly calendar reminder to explore new tools on TheresAnAIForThat.com.",
+                    level: "Your Priority"
+                });
+            }
+
+            let html = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px; color: white;">
+                    <h4 style="margin:0 0 10px 0; color: white; font-size: 1.3em;">${levelName}</h4>
+                    <p style="margin:0; opacity: 0.95;">${levelAdvice}</p>
+                </div>
+            `;
+
+            if (targetedResources.length > 0) {
+                targetedResources.forEach(resource => {
+                    html += `
+                        <div class="resource-item" style="border-left-color: #F44336; background: #FFF3E0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                                <h4 style="margin: 0; color: #D32F2F;">${resource.title}</h4>
+                                <span style="background: #F44336; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; white-space: nowrap; margin-left: 10px;">${resource.level}</span>
+                            </div>
+                            ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank" style="color: #D32F2F;">Visit Resource &rarr;</a>` : '<span style="color:#D32F2F; font-weight: 600;">Action Required</span>'}
+                            <p style="margin-top: 8px;">${resource.description}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            levelResources.forEach(resource => {
+                const levelColors = {
+                    'Foundation': '#4CAF50', 'Discovery': '#2196F3', 'Practice': '#FF9800',
+                    'Core Tools': '#9C27B0', 'Skill Building': '#00BCD4', 'Staying Current': '#FF5722',
+                    'Advanced Tools': '#673AB7', 'Deep Learning': '#3F51B5', 'Skill Mastery': '#E91E63',
+                    'Specialized Tools': '#009688', 'Power User': '#FF6F00', 'Advanced Integration': '#1976D2',
+                    'Thought Leadership': '#C2185B', 'Strategic Thinking': '#6A1B9A', 'Mastery': '#D84315',
+                    'Expert': '#B71C1C', 'Cutting Edge': '#4A148C', 'Innovation': '#1A237E'
+                };
+
+                const levelColor = levelColors[resource.level] || '#667eea';
+
+                html += `
+                    <div class="resource-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                            <h4 style="margin: 0;">${resource.title}</h4>
+                            <span style="background: ${levelColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; white-space: nowrap; margin-left: 10px;">${resource.level}</span>
+                        </div>
+                        ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank">Visit Resource &rarr;</a>` : '<span style="color:#666; font-weight: 600;">Action Item</span>'}
+                        <p style="margin-top: 8px;">${resource.description}</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('resources').innerHTML = html;
+        }
+
+        function restartAssessment() {
+            document.getElementById('assessmentForm').reset();
+            document.getElementById('assessmentForm').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
