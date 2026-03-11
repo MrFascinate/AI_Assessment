@@ -33,13 +33,17 @@ module.exports = async function handler(req, res) {
     // Store the individual response
     await redis.lpush('responses', JSON.stringify(entry));
 
-    // Update aggregate stats atomically
-    await redis.incr('total_responses');
-    await redis.incrbyfloat('score_sum', averageScore);
+    // Update aggregate stats atomically — use return values to guarantee
+    // the current submission is included (fixes race condition with separate reads)
+    const totalResponses = await redis.incr('total_responses');
+    const scoreSum = await redis.incrbyfloat('score_sum', averageScore);
 
     // Track the highest score
     const currentHighest = await redis.get('highest_score');
-    if (currentHighest === null || averageScore > parseFloat(currentHighest)) {
+    const highestScore = (currentHighest === null || averageScore > parseFloat(currentHighest))
+        ? averageScore
+        : parseFloat(currentHighest);
+    if (averageScore >= highestScore) {
         await redis.set('highest_score', averageScore);
     }
 
@@ -55,14 +59,11 @@ module.exports = async function handler(req, res) {
     // Add score to sorted set for percentile calculation
     await redis.zadd('scores', { score: averageScore, member: entry.id });
 
-    // Calculate comparison stats
-    const totalResponses = parseInt(await redis.get('total_responses')) || 1;
-    const scoreSum = parseFloat(await redis.get('score_sum')) || averageScore;
-    const highestScore = parseFloat(await redis.get('highest_score')) || averageScore;
-
-    // Percentile: count how many scored strictly lower
-    const scoredLower = await redis.zcount('scores', '-inf', `(${averageScore}`);
-    const percentile = Math.round(100 - (scoredLower / totalResponses) * 100);
+    // Percentile: use zrank to get count of members with lower scores
+    const rank = await redis.zrank('scores', entry.id);
+    const percentile = totalResponses <= 1
+        ? 1
+        : Math.max(1, Math.round(100 - (rank / (totalResponses - 1)) * 100));
 
     const distribution = {
         novice: parseInt(await redis.get('dist:novice')) || 0,
