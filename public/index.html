@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Readiness Assessment</title>
+    <title>AI Readiness Assessment | Mr. Fascinate</title>
+    <!-- Fonts matching justinshaifer.com -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,48 +15,63 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0B1121;
             min-height: 100vh;
             padding: 20px;
+            color: #A0AECB;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: #131C31;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 1px solid #1E2D4D;
         }
         h1 {
-            color: #333;
+            font-family: 'Oswald', sans-serif;
+            color: #FFFFFF;
             margin-bottom: 10px;
             font-size: 2.5em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+        h1 .accent {
+            color: #7B93DB;
         }
         .subtitle {
-            color: #666;
+            color: #6B7A99;
             margin-bottom: 30px;
             font-size: 1.1em;
+            font-weight: 400;
         }
         .section-header {
-            color: #667eea;
+            font-family: 'Oswald', sans-serif;
+            color: #7B93DB;
             font-size: 1.3em;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #1E2D4D;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .question-block {
             margin-bottom: 30px;
             padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
+            background: #0F1729;
+            border-radius: 12px;
+            border-left: 4px solid #4A6CF7;
+            border: 1px solid #1E2D4D;
+            border-left: 4px solid #4A6CF7;
         }
         .question-text {
             font-size: 1.1em;
             font-weight: 600;
-            color: #333;
+            color: #FFFFFF;
             margin-bottom: 15px;
         }
         .options {
@@ -64,14 +83,15 @@
             display: flex;
             align-items: center;
             padding: 12px;
-            background: white;
-            border: 2px solid #e0e0e0;
+            background: #131C31;
+            border: 1px solid #1E2D4D;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         .option:hover {
-            border-color: #667eea;
+            border-color: #4A6CF7;
+            background: #1A2540;
             transform: translateX(5px);
         }
         .option input[type="radio"] {
@@ -79,11 +99,13 @@
             cursor: pointer;
             width: 20px;
             height: 20px;
+            accent-color: #4A6CF7;
         }
         .option label {
             cursor: pointer;
             flex-grow: 1;
             font-size: 0.95em;
+            color: #A0AECB;
         }
         .text-input-group {
             margin-bottom: 20px;
@@ -91,7 +113,7 @@
         .text-input-group label {
             display: block;
             font-weight: 600;
-            color: #333;
+            color: #FFFFFF;
             margin-bottom: 8px;
             font-size: 0.95em;
         }
@@ -99,43 +121,55 @@
         .text-input-group textarea {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #1E2D4D;
             border-radius: 8px;
             font-size: 1em;
             font-family: inherit;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: #0F1729;
+            color: #FFFFFF;
+        }
+        .text-input-group input::placeholder,
+        .text-input-group textarea::placeholder {
+            color: #4A5568;
         }
         .text-input-group input:focus,
         .text-input-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4A6CF7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
         }
         .text-input-group textarea {
             min-height: 80px;
             resize: vertical;
         }
         .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4A6CF7;
             color: white;
             border: none;
             padding: 15px 40px;
             font-size: 1.1em;
-            font-weight: 600;
-            border-radius: 10px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 50px;
             cursor: pointer;
             width: 100%;
             margin-top: 20px;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(74, 108, 247, 0.3);
+            background: #5B7BF7;
         }
         .submit-btn:disabled {
-            background: #ccc;
+            background: #1E2D4D;
+            color: #4A5568;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
         .results {
             display: none;
@@ -144,35 +178,40 @@
         .score-display {
             text-align: center;
             padding: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1A2540 0%, #0F1729 100%);
             color: white;
             border-radius: 15px;
             margin-bottom: 30px;
+            border: 1px solid #1E2D4D;
         }
         .score-number {
+            font-family: 'Oswald', sans-serif;
             font-size: 4em;
             font-weight: bold;
             margin: 10px 0;
+            color: #4A6CF7;
         }
         .score-label {
             font-size: 1.5em;
-            opacity: 0.9;
+            color: #A0AECB;
         }
         .comparison-section {
             text-align: center;
             padding: 25px;
-            background: #f0f4ff;
+            background: #0F1729;
             border-radius: 12px;
             margin-top: 15px;
+            border: 1px solid #1E2D4D;
         }
         .comparison-section .percentile {
+            font-family: 'Oswald', sans-serif;
             font-size: 2.5em;
             font-weight: bold;
-            color: #667eea;
+            color: #4A6CF7;
         }
         .comparison-section .percentile-label {
             font-size: 1em;
-            color: #555;
+            color: #6B7A99;
             margin-top: 5px;
         }
         .comparison-stats {
@@ -185,90 +224,104 @@
         .stat-box {
             text-align: center;
             padding: 15px 20px;
-            background: white;
+            background: #131C31;
             border-radius: 10px;
             min-width: 120px;
             flex: 1;
+            border: 1px solid #1E2D4D;
         }
         .stat-box .stat-value {
+            font-family: 'Oswald', sans-serif;
             font-size: 1.5em;
             font-weight: bold;
-            color: #764ba2;
+            color: #7B93DB;
         }
         .stat-box .stat-label {
             font-size: 0.85em;
-            color: #888;
+            color: #6B7A99;
             margin-top: 4px;
         }
         .section {
             margin-bottom: 30px;
             padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            background: #0F1729;
+            border-radius: 12px;
+            border: 1px solid #1E2D4D;
         }
         .section h3 {
-            color: #667eea;
+            font-family: 'Oswald', sans-serif;
+            color: #7B93DB;
             margin-bottom: 15px;
             font-size: 1.4em;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
         .weakness-item, .resource-item {
             padding: 15px;
-            background: white;
+            background: #131C31;
             margin-bottom: 15px;
             border-radius: 8px;
-            border-left: 4px solid #764ba2;
+            border-left: 4px solid #4A6CF7;
+            border: 1px solid #1E2D4D;
+            border-left: 4px solid #4A6CF7;
         }
         .resource-item h4 {
-            color: #333;
+            color: #FFFFFF;
             margin-bottom: 8px;
+            font-weight: 600;
         }
         .resource-item a {
-            color: #667eea;
+            color: #4A6CF7;
             text-decoration: none;
             font-weight: 600;
         }
         .resource-item a:hover {
             text-decoration: underline;
+            color: #7B93DB;
         }
         .resource-item p {
-            color: #666;
+            color: #6B7A99;
             margin-top: 5px;
             font-size: 0.95em;
         }
         .restart-btn {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: transparent;
+            color: #4A6CF7;
+            border: 2px solid #4A6CF7;
             padding: 12px 30px;
             font-size: 1em;
             font-weight: 600;
-            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 50px;
             cursor: pointer;
             margin-top: 20px;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .restart-btn:hover {
-            background: #667eea;
+            background: #4A6CF7;
             color: white;
         }
         .progress-bar {
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
+            height: 4px;
+            background: #1E2D4D;
+            border-radius: 2px;
             margin-bottom: 30px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: #4A6CF7;
             width: 0%;
             transition: width 0.3s ease;
         }
         .distribution-chart {
             margin-top: 15px;
             padding: 15px;
-            background: white;
+            background: #131C31;
             border-radius: 10px;
+            border: 1px solid #1E2D4D;
         }
         .distribution-bar-row {
             display: flex;
@@ -279,13 +332,13 @@
         .distribution-bar-label {
             width: 110px;
             font-weight: 600;
-            color: #555;
+            color: #A0AECB;
             flex-shrink: 0;
         }
         .distribution-bar-track {
             flex: 1;
             height: 20px;
-            background: #eee;
+            background: #1E2D4D;
             border-radius: 10px;
             overflow: hidden;
             margin: 0 10px;
@@ -298,12 +351,12 @@
         .distribution-bar-count {
             width: 50px;
             text-align: right;
-            color: #888;
+            color: #6B7A99;
             font-size: 0.85em;
         }
         .your-score-marker {
             display: inline-block;
-            background: #667eea;
+            background: #4A6CF7;
             color: white;
             padding: 2px 8px;
             border-radius: 10px;
@@ -315,7 +368,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>AI Readiness Assessment</h1>
+        <h1>AI Readiness <span class="accent">Assessment</span></h1>
         <p class="subtitle">Discover your AI proficiency level and get personalized recommendations</p>
 
         <div class="progress-bar">
@@ -631,7 +684,7 @@
             <div class="section">
                 <h3>Score Distribution</h3>
                 <div class="distribution-chart" id="distributionChart">
-                    <p style="color:#888; text-align:center;">Loading distribution data...</p>
+                    <p style="color:#6B7A99; text-align:center;">Loading distribution data...</p>
                 </div>
             </div>
 
@@ -762,16 +815,16 @@
             document.getElementById('totalResponses').textContent = '--';
             document.getElementById('averageScore').textContent = '--';
             document.getElementById('highestScore').textContent = '--';
-            document.getElementById('distributionChart').innerHTML = '<p style="color:#888; text-align:center;">Distribution data unavailable.</p>';
+            document.getElementById('distributionChart').innerHTML = '<p style="color:#6B7A99; text-align:center;">Distribution data unavailable.</p>';
         }
 
         function renderDistribution(distribution, userScore) {
             const buckets = [
-                { label: 'Novice (0-3)', key: 'novice', color: '#F44336' },
-                { label: 'Beginner (3-5)', key: 'beginner', color: '#FF9800' },
-                { label: 'Intermediate (5-7)', key: 'intermediate', color: '#FFC107' },
-                { label: 'Proficient (7-9)', key: 'proficient', color: '#4CAF50' },
-                { label: 'Expert (9-10)', key: 'expert', color: '#667eea' }
+                { label: 'Novice (0-3)', key: 'novice', color: '#F87171' },
+                { label: 'Beginner (3-5)', key: 'beginner', color: '#FBBF24' },
+                { label: 'Intermediate (5-7)', key: 'intermediate', color: '#7B93DB' },
+                { label: 'Proficient (7-9)', key: 'proficient', color: '#4ADE80' },
+                { label: 'Expert (9-10)', key: 'expert', color: '#4A6CF7' }
             ];
 
             const maxCount = Math.max(...buckets.map(b => distribution[b.key] || 0), 1);
@@ -828,7 +881,7 @@
                 description = "Great opportunity to explore AI tools!";
             }
 
-            document.getElementById('scoreCategory').innerHTML = `${category}<br><small style="font-size:0.5em">${description}</small>`;
+            document.getElementById('scoreCategory').innerHTML = `${category}<br><small style="font-size:0.5em; color:#A0AECB">${description}</small>`;
 
             displayBreakdown(scores);
             identifyWeaknesses(scores);
@@ -852,14 +905,14 @@
             let html = '';
             for (const [key, value] of Object.entries(scores)) {
                 const percentage = value * 10;
-                const color = value >= 7 ? '#4CAF50' : value >= 4 ? '#FFC107' : '#F44336';
+                const color = value >= 7 ? '#4ADE80' : value >= 4 ? '#FBBF24' : '#F87171';
                 html += `
                     <div style="margin-bottom:15px">
                         <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-                            <span style="font-weight:600">${areas[key]}</span>
-                            <span style="font-weight:600">${value}/10</span>
+                            <span style="font-weight:600; color:#FFFFFF">${areas[key]}</span>
+                            <span style="font-weight:600; color:#7B93DB">${value}/10</span>
                         </div>
-                        <div style="background:#e0e0e0; height:8px; border-radius:4px; overflow:hidden">
+                        <div style="background:#1E2D4D; height:8px; border-radius:4px; overflow:hidden">
                             <div style="background:${color}; width:${percentage}%; height:100%; transition:width 0.5s ease"></div>
                         </div>
                     </div>
@@ -926,8 +979,8 @@
                 weaknesses.forEach(weakness => {
                     html += `
                         <div class="weakness-item">
-                            <strong style="color:#764ba2; font-size:1.1em">${weakness.title}</strong>
-                            <p style="margin-top:8px; color:#555">${weakness.advice}</p>
+                            <strong style="color:#7B93DB; font-size:1.1em">${weakness.title}</strong>
+                            <p style="margin-top:8px; color:#6B7A99">${weakness.advice}</p>
                         </div>
                     `;
                 });
@@ -1222,21 +1275,21 @@
             }
 
             let html = `
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px; color: white;">
-                    <h4 style="margin:0 0 10px 0; color: white; font-size: 1.3em;">${levelName}</h4>
-                    <p style="margin:0; opacity: 0.95;">${levelAdvice}</p>
+                <div style="background: linear-gradient(135deg, #1A2540 0%, #0F1729 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; color: white; border: 1px solid #4A6CF7;">
+                    <h4 style="margin:0 0 10px 0; color: #FFFFFF; font-size: 1.3em; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.03em;">${levelName}</h4>
+                    <p style="margin:0; color: #A0AECB;">${levelAdvice}</p>
                 </div>
             `;
 
             if (targetedResources.length > 0) {
                 targetedResources.forEach(resource => {
                     html += `
-                        <div class="resource-item" style="border-left-color: #F44336; background: #FFF3E0;">
+                        <div class="resource-item" style="border-left-color: #F87171; background: rgba(248, 113, 113, 0.08);">
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                                <h4 style="margin: 0; color: #D32F2F;">${resource.title}</h4>
-                                <span style="background: #F44336; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; white-space: nowrap; margin-left: 10px;">${resource.level}</span>
+                                <h4 style="margin: 0; color: #F87171;">${resource.title}</h4>
+                                <span style="background: #F87171; color: #0B1121; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; white-space: nowrap; margin-left: 10px;">${resource.level}</span>
                             </div>
-                            ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank" style="color: #D32F2F;">Visit Resource &rarr;</a>` : '<span style="color:#D32F2F; font-weight: 600;">Action Required</span>'}
+                            ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank" style="color: #F87171;">Visit Resource &rarr;</a>` : '<span style="color:#F87171; font-weight: 600;">Action Required</span>'}
                             <p style="margin-top: 8px;">${resource.description}</p>
                         </div>
                     `;
@@ -1245,15 +1298,15 @@
 
             levelResources.forEach(resource => {
                 const levelColors = {
-                    'Foundation': '#4CAF50', 'Discovery': '#2196F3', 'Practice': '#FF9800',
-                    'Core Tools': '#9C27B0', 'Skill Building': '#00BCD4', 'Staying Current': '#FF5722',
-                    'Advanced Tools': '#673AB7', 'Deep Learning': '#3F51B5', 'Skill Mastery': '#E91E63',
-                    'Specialized Tools': '#009688', 'Power User': '#FF6F00', 'Advanced Integration': '#1976D2',
-                    'Thought Leadership': '#C2185B', 'Strategic Thinking': '#6A1B9A', 'Mastery': '#D84315',
-                    'Expert': '#B71C1C', 'Cutting Edge': '#4A148C', 'Innovation': '#1A237E'
+                    'Foundation': '#4ADE80', 'Discovery': '#4A6CF7', 'Practice': '#FBBF24',
+                    'Core Tools': '#A78BFA', 'Skill Building': '#22D3EE', 'Staying Current': '#FB923C',
+                    'Advanced Tools': '#818CF8', 'Deep Learning': '#7B93DB', 'Skill Mastery': '#F472B6',
+                    'Specialized Tools': '#2DD4BF', 'Power User': '#FBBF24', 'Advanced Integration': '#4A6CF7',
+                    'Thought Leadership': '#F472B6', 'Strategic Thinking': '#A78BFA', 'Mastery': '#FB923C',
+                    'Expert': '#F87171', 'Cutting Edge': '#818CF8', 'Innovation': '#7B93DB'
                 };
 
-                const levelColor = levelColors[resource.level] || '#667eea';
+                const levelColor = levelColors[resource.level] || '#4A6CF7';
 
                 html += `
                     <div class="resource-item">
@@ -1261,7 +1314,7 @@
                             <h4 style="margin: 0;">${resource.title}</h4>
                             <span style="background: ${levelColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 600; white-space: nowrap; margin-left: 10px;">${resource.level}</span>
                         </div>
-                        ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank">Visit Resource &rarr;</a>` : '<span style="color:#666; font-weight: 600;">Action Item</span>'}
+                        ${resource.url !== '#' ? `<a href="${resource.url}" target="_blank">Visit Resource &rarr;</a>` : '<span style="color:#7B93DB; font-weight: 600;">Action Item</span>'}
                         <p style="margin-top: 8px;">${resource.description}</p>
                     </div>
                 `;
