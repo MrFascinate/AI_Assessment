@@ -335,6 +335,18 @@
                     <label for="email">Email Address *</label>
                     <input type="email" id="email" name="email" placeholder="e.g. jane@example.com" required>
                 </div>
+                <div class="text-input-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g. Marketing Manager, Software Engineer, CEO" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="company">Company *</label>
+                    <input type="text" id="company" name="company" placeholder="e.g. Acme Corp" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" name="location" placeholder="e.g. New York, NY" required>
+                </div>
             </div>
 
             <!-- AI Assessment Questions -->
@@ -686,6 +698,9 @@
             const submission = {
                 fullName: document.getElementById('fullName').value.trim(),
                 email: document.getElementById('email').value.trim(),
+                jobTitle: document.getElementById('jobTitle').value.trim(),
+                company: document.getElementById('company').value.trim(),
+                location: document.getElementById('location').value.trim(),
                 scores: scores,
                 averageScore: parseFloat(averageScore),
                 aiToolsInterest: document.getElementById('aiToolsInterest').value.trim(),

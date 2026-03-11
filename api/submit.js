@@ -10,9 +10,9 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { fullName, email, scores, averageScore, aiToolsInterest, aiWorkGoals, submittedAt } = req.body;
+    const { fullName, email, jobTitle, company, location, scores, averageScore, aiToolsInterest, aiWorkGoals, submittedAt } = req.body;
 
-    if (!fullName || !email || !scores || averageScore == null) {
+    if (!fullName || !email || !jobTitle || !company || !location || !scores || averageScore == null) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -20,6 +20,9 @@ module.exports = async function handler(req, res) {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
         fullName,
         email,
+        jobTitle,
+        company,
+        location,
         scores,
         averageScore,
         aiToolsInterest: aiToolsInterest || '',
