@@ -1,4 +1,6 @@
 {
+  "buildCommand": false,
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]

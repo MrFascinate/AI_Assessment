@@ -2,12 +2,10 @@
   "name": "ai-readiness-assessment",
   "version": "1.0.0",
   "description": "AI Readiness Assessment tool with backend scoring and comparison",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "@upstash/redis": "^1.36.4",
-    "express": "^4.21.0"
+    "@upstash/redis": "^1.36.4"
   }
 }
