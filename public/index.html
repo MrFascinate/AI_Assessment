@@ -1296,7 +1296,7 @@
                 });
             }
 
-            levelResources.forEach(resource => {
+            levelResources.slice(0, 5).forEach(resource => {
                 const levelColors = {
                     'Foundation': '#4ADE80', 'Discovery': '#4A90D9', 'Practice': '#FBBF24',
                     'Core Tools': '#A78BFA', 'Skill Building': '#22D3EE', 'Staying Current': '#FB923C',
