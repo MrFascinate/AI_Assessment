@@ -6,6 +6,5 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "@upstash/redis": "^1.36.4"
   }
 }
