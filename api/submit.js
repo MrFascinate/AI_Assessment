@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { fullName, email, jobTitle, company, location, scores, averageScore, aiToolsInterest, aiWorkGoals, submittedAt } = req.body;
+    const { fullName, email, jobTitle, company, location, scores, warmup, averageScore, aiToolsInterest, aiWorkGoals, submittedAt } = req.body;
 
     if (!fullName || !email || !jobTitle || !company || !location || !scores || averageScore == null) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -37,6 +37,15 @@ module.exports = async function handler(req, res) {
     for (let i = 1; i <= 10; i++) {
         if (scores[`q${i}`] != null) {
             fields[`q${i}`] = scores[`q${i}`];
+        }
+    }
+
+    // Flatten warm-up yes/no answers
+    if (warmup) {
+        for (let i = 1; i <= 3; i++) {
+            if (warmup[`warmup${i}`]) {
+                fields[`warmup${i}`] = warmup[`warmup${i}`];
+            }
         }
     }
 

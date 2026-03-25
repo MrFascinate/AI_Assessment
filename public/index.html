@@ -403,6 +403,51 @@
                 </div>
             </div>
 
+            <!-- Warm-Up Yes/No Questions -->
+            <div class="section-header">Quick Warm-Up</div>
+
+            <div class="question-block">
+                <div class="question-text">Have you heard the term "vibe coding" before?</div>
+                <div class="options" style="display: flex; gap: 1rem;">
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup1yes" name="warmup1" value="yes" required>
+                        <label for="warmup1yes">Yes</label>
+                    </div>
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup1no" name="warmup1" value="no">
+                        <label for="warmup1no">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">Have you ever used an AI chatbot (e.g. ChatGPT, Claude, Gemini) for work?</div>
+                <div class="options" style="display: flex; gap: 1rem;">
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup2yes" name="warmup2" value="yes" required>
+                        <label for="warmup2yes">Yes</label>
+                    </div>
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup2no" name="warmup2" value="no">
+                        <label for="warmup2no">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">Do you believe AI will significantly change your job in the next 2 years?</div>
+                <div class="options" style="display: flex; gap: 1rem;">
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup3yes" name="warmup3" value="yes" required>
+                        <label for="warmup3yes">Yes</label>
+                    </div>
+                    <div class="option" style="flex: none;">
+                        <input type="radio" id="warmup3no" name="warmup3" value="no">
+                        <label for="warmup3no">No</label>
+                    </div>
+                </div>
+            </div>
+
             <!-- AI Assessment Questions -->
             <div class="section-header">AI Readiness Questions</div>
 
@@ -748,6 +793,13 @@
 
             const averageScore = (totalScore / 10).toFixed(1);
 
+            // Collect warm-up answers
+            const warmup = {};
+            for (let i = 1; i <= 3; i++) {
+                const sel = document.querySelector(`input[name="warmup${i}"]:checked`);
+                if (sel) warmup[`warmup${i}`] = sel.value;
+            }
+
             // Collect qualifying info and open-ended responses
             const submission = {
                 fullName: document.getElementById('fullName').value.trim(),
@@ -756,6 +808,7 @@
                 company: document.getElementById('company').value.trim(),
                 location: document.getElementById('location').value.trim(),
                 scores: scores,
+                warmup: warmup,
                 averageScore: parseFloat(averageScore),
                 aiToolsInterest: document.getElementById('aiToolsInterest').value.trim(),
                 aiWorkGoals: document.getElementById('aiWorkGoals').value.trim(),
