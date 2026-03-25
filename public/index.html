@@ -378,6 +378,7 @@
         <form id="assessmentForm">
             <!-- Qualifying Questions Section -->
             <div class="section-header">About You</div>
+            <p style="color: #b0b0b0; font-size: 0.9rem; margin: -0.5rem 0 1rem 0;">Your information is used solely to personalize your assessment results. We will never share your data, send you spam, or use it for any marketing purposes.</p>
 
             <div class="question-block">
                 <div class="text-input-group">
@@ -614,23 +615,23 @@
 
             <!-- Question 10 -->
             <div class="question-block">
-                <div class="question-text">10. How confident are you in your ability to integrate AI tools into your existing workflows?</div>
+                <div class="question-text">10. How comfortable are you using AI agents — autonomous tools that can complete multi-step tasks, make decisions, and take actions on your behalf?</div>
                 <div class="options">
                     <div class="option">
                         <input type="radio" id="q10a" name="q10" value="10" required>
-                        <label for="q10a">Very confident - I seamlessly incorporate AI into my daily processes</label>
+                        <label for="q10a">Very comfortable - I regularly use AI agents and trust them with complex tasks</label>
                     </div>
                     <div class="option">
                         <input type="radio" id="q10b" name="q10" value="7">
-                        <label for="q10b">Moderately confident - I can integrate AI with some planning</label>
+                        <label for="q10b">Somewhat comfortable - I've used AI agents but still closely supervise them</label>
                     </div>
                     <div class="option">
                         <input type="radio" id="q10c" name="q10" value="4">
-                        <label for="q10c">Somewhat confident - I struggle to make AI fit my workflow</label>
+                        <label for="q10c">Slightly comfortable - I've heard of AI agents but have barely tried them</label>
                     </div>
                     <div class="option">
                         <input type="radio" id="q10d" name="q10" value="1">
-                        <label for="q10d">Not confident - I don't know how to integrate AI into my work</label>
+                        <label for="q10d">Not comfortable - I'm not sure what AI agents are or how they work</label>
                     </div>
                 </div>
             </div>
@@ -899,7 +900,7 @@
                 q7: "Staying Updated",
                 q8: "Troubleshooting Ability",
                 q9: "Output Quality Assessment",
-                q10: "Workflow Integration"
+                q10: "AI Agent Comfort"
             };
 
             let html = '';
@@ -960,8 +961,8 @@
                     advice: "Always verify AI outputs, especially for important work. Cross-check facts, review for bias, ensure accuracy. Treat AI as a collaborative assistant, not an infallible expert."
                 },
                 q10: {
-                    title: "Struggle with Workflow Integration",
-                    advice: "Map your existing workflow step-by-step. Identify bottlenecks or repetitive tasks. Test AI tools at specific integration points rather than trying to overhaul everything at once."
+                    title: "Unfamiliar with AI Agents",
+                    advice: "AI agents are tools that can autonomously handle multi-step tasks like research, scheduling, or coding. Start by trying a simple agent — such as a coding assistant or research bot — with low-stakes tasks to build your comfort level."
                 }
             };
 
