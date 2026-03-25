@@ -1,4 +1,10 @@
-const { fetchAllScores, airtableFetch } = require('./airtable');
+const { Redis } = require('@upstash/redis');
+const { sendToAirtable } = require('./airtable');
+
+const redis = new Redis({
+    url: process.env.KV_REST_API_URL,
+    token: process.env.KV_REST_API_TOKEN,
+});
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -11,7 +17,50 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Determine level bucket
+    const entryId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+    // --- Redis: fast stats engine ---
+
+    // Update aggregate stats atomically
+    const totalResponses = await redis.incr('total_responses');
+    const scoreSum = await redis.incrbyfloat('score_sum', averageScore);
+
+    // Track the highest score
+    const currentHighest = await redis.get('highest_score');
+    const highestScore = (currentHighest === null || averageScore > parseFloat(currentHighest))
+        ? averageScore
+        : parseFloat(currentHighest);
+    if (averageScore >= highestScore) {
+        await redis.set('highest_score', averageScore);
+    }
+
+    // Increment distribution bucket
+    let bucket;
+    if (averageScore < 3) bucket = 'dist:novice';
+    else if (averageScore < 5) bucket = 'dist:beginner';
+    else if (averageScore < 7) bucket = 'dist:intermediate';
+    else if (averageScore < 9) bucket = 'dist:proficient';
+    else bucket = 'dist:expert';
+    await redis.incr(bucket);
+
+    // Add score to sorted set for percentile calculation
+    await redis.zadd('scores', { score: averageScore, member: entryId });
+
+    // Percentile: use zrank to get count of members with lower scores
+    const rank = await redis.zrank('scores', entryId);
+    const percentile = totalResponses <= 1
+        ? 100
+        : Math.max(1, Math.round(100 - (rank / (totalResponses - 1)) * 100));
+
+    const distribution = {
+        novice: parseInt(await redis.get('dist:novice')) || 0,
+        beginner: parseInt(await redis.get('dist:beginner')) || 0,
+        intermediate: parseInt(await redis.get('dist:intermediate')) || 0,
+        proficient: parseInt(await redis.get('dist:proficient')) || 0,
+        expert: parseInt(await redis.get('dist:expert')) || 0,
+    };
+
+    // --- Airtable: browsable copy (fire-and-forget, don't block response) ---
     let level;
     if (averageScore < 3) level = 'novice';
     else if (averageScore < 5) level = 'beginner';
@@ -19,61 +68,14 @@ module.exports = async function handler(req, res) {
     else if (averageScore < 9) level = 'proficient';
     else level = 'expert';
 
-    // Build Airtable record fields
-    const fields = {
-        fullName,
-        email,
-        jobTitle,
-        company,
-        location,
-        averageScore,
-        level,
+    sendToAirtable({
+        fullName, email, jobTitle, company, location,
+        averageScore, level,
         aiToolsInterest: aiToolsInterest || '',
         aiWorkGoals: aiWorkGoals || '',
         submittedAt: submittedAt || new Date().toISOString(),
-    };
-
-    // Flatten individual question scores into separate columns
-    for (let i = 1; i <= 10; i++) {
-        if (scores[`q${i}`] != null) {
-            fields[`q${i}`] = scores[`q${i}`];
-        }
-    }
-
-    // Flatten warm-up yes/no answers
-    if (warmup) {
-        for (let i = 1; i <= 3; i++) {
-            if (warmup[`warmup${i}`]) {
-                fields[`warmup${i}`] = warmup[`warmup${i}`];
-            }
-        }
-    }
-
-    // Create the record in Airtable
-    await airtableFetch('', {
-        method: 'POST',
-        body: JSON.stringify({ records: [{ fields }] }),
-    });
-
-    // Fetch all scores for comparison stats
-    const allScores = await fetchAllScores();
-    const totalResponses = allScores.length;
-    const scoreSum = allScores.reduce((a, b) => a + b, 0);
-    const highestScore = Math.max(...allScores);
-
-    // Percentile: percentage of respondents who scored lower
-    const scoredLower = allScores.filter(s => s < averageScore).length;
-    const percentile = totalResponses <= 1
-        ? 100
-        : Math.max(1, Math.round((scoredLower / (totalResponses - 1)) * 100));
-
-    const distribution = {
-        novice: allScores.filter(s => s < 3).length,
-        beginner: allScores.filter(s => s >= 3 && s < 5).length,
-        intermediate: allScores.filter(s => s >= 5 && s < 7).length,
-        proficient: allScores.filter(s => s >= 7 && s < 9).length,
-        expert: allScores.filter(s => s >= 9).length,
-    };
+        scores, warmup,
+    }).catch(err => console.error('Airtable write failed:', err.message));
 
     res.status(200).json({
         totalResponses,
