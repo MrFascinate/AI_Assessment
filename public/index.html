@@ -284,6 +284,31 @@
             margin-top: 5px;
             font-size: 0.95em;
         }
+        .cta-btn {
+            display: block;
+            background: #5DADE2;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2em;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(93, 173, 226, 0.4);
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(93, 173, 226, 0.5);
+            background: #4A90D9;
+        }
         .restart-btn {
             background: transparent;
             color: #4A90D9;
@@ -748,6 +773,8 @@
                 <h3>Recommended Resources & Tools</h3>
                 <div id="resources"></div>
             </div>
+
+            <a href="https://justinshaifer.com/#contact" target="_top" class="cta-btn">Book Justin to Help You Learn AI</a>
 
             <button class="restart-btn" onclick="restartAssessment()">Take Assessment Again</button>
         </div>
