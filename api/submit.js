@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
         expert: parseInt(await redis.get('dist:expert')) || 0,
     };
 
-    // --- Airtable: browsable copy (fire-and-forget, don't block response) ---
+    // --- Airtable: browsable copy (await to ensure it completes before function exits) ---
     let level;
     if (averageScore < 3) level = 'novice';
     else if (averageScore < 5) level = 'beginner';
@@ -68,14 +68,18 @@ module.exports = async function handler(req, res) {
     else if (averageScore < 9) level = 'proficient';
     else level = 'expert';
 
-    sendToAirtable({
-        fullName, email, jobTitle, company, location,
-        averageScore, level,
-        aiToolsInterest: aiToolsInterest || '',
-        aiWorkGoals: aiWorkGoals || '',
-        submittedAt: submittedAt || new Date().toISOString(),
-        scores, warmup,
-    }).catch(err => console.error('Airtable write failed:', err.message));
+    try {
+        await sendToAirtable({
+            fullName, email, jobTitle, company, location,
+            averageScore, level,
+            aiToolsInterest: aiToolsInterest || '',
+            aiWorkGoals: aiWorkGoals || '',
+            submittedAt: submittedAt || new Date().toISOString(),
+            scores, warmup,
+        });
+    } catch (err) {
+        console.error('Airtable write failed:', err.message);
+    }
 
     res.status(200).json({
         totalResponses,
