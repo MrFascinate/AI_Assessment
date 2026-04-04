@@ -389,6 +389,81 @@
             margin-left: 5px;
             vertical-align: middle;
         }
+        /* Results blur when modal is active */
+        .results.blurred {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+        /* Modal overlay */
+        .info-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 17, 33, 0.75);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .info-modal-overlay.active {
+            display: flex;
+        }
+        .info-modal {
+            background: #131C31;
+            border: 1px solid #1E2D4D;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .info-modal h2 {
+            font-family: 'Oswald', sans-serif;
+            color: #FFFFFF;
+            font-size: 1.6em;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 8px;
+        }
+        .info-modal .modal-subtitle {
+            color: #6B7A99;
+            font-size: 0.95em;
+            margin-bottom: 24px;
+        }
+        .info-modal .text-input-group {
+            margin-bottom: 16px;
+        }
+        .unlock-btn {
+            background: #4A90D9;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 108, 247, 0.3);
+            background: #5DADE2;
+        }
+        .unlock-btn:disabled {
+            background: #1E2D4D;
+            color: #4A5568;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -401,33 +476,6 @@
         </div>
 
         <form id="assessmentForm">
-            <!-- Qualifying Questions Section -->
-            <div class="section-header">About You</div>
-            <p style="color: #b0b0b0; font-size: 0.9rem; margin: -0.5rem 0 1rem 0;">Your information is used solely to personalize your assessment results. We will never share your data or send you spam.</p>
-
-            <div class="question-block">
-                <div class="text-input-group">
-                    <label for="fullName">Full Name *</label>
-                    <input type="text" id="fullName" name="fullName" placeholder="e.g. Jane Smith" required>
-                </div>
-                <div class="text-input-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" placeholder="e.g. jane@example.com" required>
-                </div>
-                <div class="text-input-group">
-                    <label for="jobTitle">Job Title *</label>
-                    <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g. Marketing Manager, Software Engineer, CEO" required>
-                </div>
-                <div class="text-input-group">
-                    <label for="company">Company *</label>
-                    <input type="text" id="company" name="company" placeholder="e.g. Acme Corp" required>
-                </div>
-                <div class="text-input-group">
-                    <label for="location">Location *</label>
-                    <input type="text" id="location" name="location" placeholder="e.g. New York, NY" required>
-                </div>
-            </div>
-
             <!-- Warm-Up Yes/No Questions -->
             <div class="section-header">Quick Warm-Up</div>
 
@@ -780,6 +828,38 @@
         </div>
     </div>
 
+    <!-- Personal Info Modal Overlay -->
+    <div class="info-modal-overlay" id="infoModalOverlay">
+        <div class="info-modal">
+            <h2>Unlock Your <span style="color:#5DADE2;">Results</span></h2>
+            <p class="modal-subtitle">Your results are ready! Enter your info below to see your personalized AI readiness score and recommendations.</p>
+            <p style="color: #6B7A99; font-size: 0.85rem; margin-bottom: 20px;">Your information is used solely to personalize your assessment results. We will never share your data or send you spam.</p>
+            <form id="infoForm">
+                <div class="text-input-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="e.g. Jane Smith" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="e.g. jane@example.com" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g. Marketing Manager, Software Engineer, CEO" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="company">Company *</label>
+                    <input type="text" id="company" name="company" placeholder="e.g. Acme Corp" required>
+                </div>
+                <div class="text-input-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" name="location" placeholder="e.g. New York, NY" required>
+                </div>
+                <button type="submit" class="unlock-btn">Unlock My Results</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
 
@@ -805,6 +885,11 @@
             calculateScore();
         });
 
+        // Temporary storage for scores between calculate and unlock
+        let pendingScores = {};
+        let pendingAverageScore = 0;
+        let pendingWarmup = {};
+
         function calculateScore() {
             let totalScore = 0;
             const scores = {};
@@ -827,28 +912,48 @@
                 if (sel) warmup[`warmup${i}`] = sel.value;
             }
 
-            // Collect qualifying info and open-ended responses
+            // Store for later submission
+            pendingScores = scores;
+            pendingAverageScore = averageScore;
+            pendingWarmup = warmup;
+
+            // Show results (blurred) and display modal overlay
+            displayResults(averageScore, scores);
+            document.getElementById('results').classList.add('blurred');
+            document.getElementById('infoModalOverlay').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle personal info form submission (unlock results)
+        document.getElementById('infoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            unlockResults();
+        });
+
+        function unlockResults() {
             const submission = {
                 fullName: document.getElementById('fullName').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 jobTitle: document.getElementById('jobTitle').value.trim(),
                 company: document.getElementById('company').value.trim(),
                 location: document.getElementById('location').value.trim(),
-                scores: scores,
-                warmup: warmup,
-                averageScore: parseFloat(averageScore),
+                scores: pendingScores,
+                warmup: pendingWarmup,
+                averageScore: parseFloat(pendingAverageScore),
                 aiToolsInterest: document.getElementById('aiToolsInterest').value.trim(),
                 aiWorkGoals: document.getElementById('aiWorkGoals').value.trim(),
                 submittedAt: new Date().toISOString()
             };
 
-            // Submit to backend and display results
-            submitAndDisplay(submission, averageScore, scores);
+            // Dismiss modal and unblur results
+            document.getElementById('infoModalOverlay').classList.remove('active');
+            document.getElementById('results').classList.remove('blurred');
+
+            // Now submit to backend (Redis + Airtable)
+            submitToBackend(submission, pendingAverageScore);
         }
 
-        async function submitAndDisplay(submission, score, scores) {
-            displayResults(score, scores);
-
+        async function submitToBackend(submission, score) {
             try {
                 const response = await fetch(`${API_BASE}/submit`, {
                     method: 'POST',
@@ -1406,9 +1511,15 @@
 
         function restartAssessment() {
             document.getElementById('assessmentForm').reset();
+            document.getElementById('infoForm').reset();
             document.getElementById('assessmentForm').style.display = 'block';
             document.getElementById('results').style.display = 'none';
+            document.getElementById('results').classList.remove('blurred');
+            document.getElementById('infoModalOverlay').classList.remove('active');
             document.getElementById('progressBar').style.width = '0%';
+            pendingScores = {};
+            pendingAverageScore = 0;
+            pendingWarmup = {};
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
