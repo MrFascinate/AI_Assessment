@@ -1,10 +1,10 @@
 const { Redis } = require('@upstash/redis');
 const { sendToAirtable } = require('./airtable');
 
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
-});
+const redisUrl = process.env.NEWDATA_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const redisToken = process.env.NEWDATA_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+
+const redis = redisUrl && redisToken ? new Redis({ url: redisUrl, token: redisToken }) : null;
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -19,8 +19,39 @@ module.exports = async function handler(req, res) {
 
     const entryId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
+    let level;
+    if (averageScore < 3) level = 'novice';
+    else if (averageScore < 5) level = 'beginner';
+    else if (averageScore < 7) level = 'intermediate';
+    else if (averageScore < 9) level = 'proficient';
+    else level = 'expert';
+
+    // Always save to Airtable
     try {
-        // --- Redis: fast stats engine ---
+        await sendToAirtable({
+            fullName, email, jobTitle, company, location,
+            averageScore, level,
+            aiToolsInterest: aiToolsInterest || '',
+            aiWorkGoals: aiWorkGoals || '',
+            submittedAt: submittedAt || new Date().toISOString(),
+            scores, warmup,
+        });
+    } catch (err) {
+        console.error('Airtable write failed:', err.message);
+    }
+
+    // Try Redis for stats, but don't fail if unavailable
+    if (!redis) {
+        return res.status(200).json({
+            totalResponses: null,
+            averageScore: null,
+            highestScore: null,
+            percentile: null,
+            distribution: null,
+        });
+    }
+
+    try {
         const totalResponses = await redis.incr('total_responses');
         const scoreSum = await redis.incrbyfloat('score_sum', averageScore);
 
@@ -55,27 +86,6 @@ module.exports = async function handler(req, res) {
             expert: parseInt(await redis.get('dist:expert')) || 0,
         };
 
-        // --- Airtable: browsable copy ---
-        let level;
-        if (averageScore < 3) level = 'novice';
-        else if (averageScore < 5) level = 'beginner';
-        else if (averageScore < 7) level = 'intermediate';
-        else if (averageScore < 9) level = 'proficient';
-        else level = 'expert';
-
-        try {
-            await sendToAirtable({
-                fullName, email, jobTitle, company, location,
-                averageScore, level,
-                aiToolsInterest: aiToolsInterest || '',
-                aiWorkGoals: aiWorkGoals || '',
-                submittedAt: submittedAt || new Date().toISOString(),
-                scores, warmup,
-            });
-        } catch (err) {
-            console.error('Airtable write failed:', err.message);
-        }
-
         res.status(200).json({
             totalResponses,
             averageScore: scoreSum / totalResponses,
@@ -84,7 +94,13 @@ module.exports = async function handler(req, res) {
             distribution,
         });
     } catch (err) {
-        console.error('Submit handler error:', err);
-        res.status(500).json({ error: 'Internal server error', message: err.message });
+        console.error('Redis error (non-fatal):', err.message);
+        res.status(200).json({
+            totalResponses: null,
+            averageScore: null,
+            highestScore: null,
+            percentile: null,
+            distribution: null,
+        });
     }
 };
